@@ -6,7 +6,7 @@ import {
     TouchableOpacity, ScrollView,SafeAreaView,
   } from 'react-native';
 import FontsIcons from 'react-native-vector-icons/FontAwesome6'
-import { colors, theme } from '../styles/theme';
+import { colors, theme } from '../assets/styles/theme';
 
 function RegisterObjectScreen({ navigation }) {
     const [selectedTab, setSelectedTab] = useState(0);

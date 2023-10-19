@@ -7,7 +7,7 @@ import {
     TouchableOpacity, ScrollView,SafeAreaView
   } from 'react-native';
 import FontsIcons from 'react-native-vector-icons/FontAwesome6'
-import { colors, screenWidth, theme } from '../styles/theme';
+import { colors, screenWidth, theme } from '../assets/styles/theme';
 
 
 function SignupScreen({ navigation }) {
@@ -21,7 +21,7 @@ function SignupScreen({ navigation }) {
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ alignItems: 'center'}}>
               <Image
-                source={require('../images/search.png')}
+                source={require('../assets/images/search.png')}
                 style={{
                   height: (screenWidth * 40) / 100, 
                   width: (screenWidth * 40) / 100,

@@ -6,7 +6,7 @@ import {
     TouchableOpacity, ScrollView,SafeAreaView,FlatList
   } from 'react-native';
 import FontsIcons from 'react-native-vector-icons/FontAwesome6'
-import { colors, theme } from '../styles/theme';
+import { colors, theme } from '../assets/styles/theme';
 
 function ObjectFoundScreen({ navigation }) {
 

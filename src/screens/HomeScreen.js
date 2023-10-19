@@ -4,7 +4,7 @@ import {
     View,
     Image,
   } from 'react-native';
-import { colors, theme } from '../styles/theme';
+import { colors, theme } from '../assets/styles/theme';
 
 function HomeScreen({ navigation }) {
 
@@ -23,7 +23,7 @@ function HomeScreen({ navigation }) {
       
         {/* Image */}
         <Image
-          source={require('../images/explorer.png')}
+          source={require('../assets/images/explorer.png')}
           style={{
             height: 150, 
             width: 150, 

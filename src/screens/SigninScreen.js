@@ -7,7 +7,7 @@ import {
     TouchableOpacity, ScrollView,SafeAreaView,
   } from 'react-native';
 import FontsIcons from 'react-native-vector-icons/FontAwesome6'
-import { colors, theme } from '../styles/theme';
+import { colors, theme } from '../assets/styles/theme';
 
 function SigninScreen({ navigation }) {
     const [isPasswordShown, setIsPasswordShown] = useState(false);
@@ -22,7 +22,7 @@ function SigninScreen({ navigation }) {
   
           <View style={{ alignItems: 'center'}}>
             <Image
-              source={require('../images/authenticate.png')}
+              source={require('../assets/images/authenticate.png')}
               style={{
                 resizeMode: 'cover',
                 height: 160, 

@@ -6,7 +6,7 @@ import {
     TouchableOpacity,SafeAreaView,
   } from 'react-native';
 import FontsIcons from 'react-native-vector-icons/FontAwesome6'
-import { colors, theme } from '../styles/theme';
+import { colors, theme } from '../assets/styles/theme';
 
 function WelcomeScreen({ navigation }) {
     return (
@@ -58,7 +58,7 @@ function WelcomeScreen({ navigation }) {
           </Text>
   
           <Image
-            source={require('../images/explorator.png')}
+            source={require('../assets/images/explorator.png')}
             style={{
               height: 120,
               width: 120, 
@@ -87,7 +87,7 @@ function WelcomeScreen({ navigation }) {
           >
             <Image
               source={
-                require('../images/lost_or_find_object.png')
+                require('../assets/images/lost_or_find_object.png')
               }
               style={{
                 height: 100,
@@ -129,7 +129,7 @@ function WelcomeScreen({ navigation }) {
           >
             <Image
               source={
-                require('../images/trouv_object.png')
+                require('../assets/images/trouv_object.png')
               }
               style={{
                 height: 100, 
