@@ -1,138 +1,176 @@
-import React, { useState} from 'react'
+import React, { useState, useEffect } from "react";
 import {
-    Text,
-    View,
-    TextInput,
-    Image,
-    TouchableOpacity, ScrollView,SafeAreaView,
-  } from 'react-native';
-import FontsIcons from 'react-native-vector-icons/FontAwesome6'
-import { colors, theme } from '../assets/styles/theme';
+  Text,
+  View,
+  StatusBar,
+  ImageBackground,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator
+} from "react-native";
 
-function SigninScreen({ navigation }) {
-    const [isPasswordShown, setIsPasswordShown] = useState(false);
-  
-    return (
-      <SafeAreaView style={{ flex: 1}}>
-        <ScrollView 
-          showsVerticalScrollIndicator={false} 
-          contentContainerStyle={{
-             marginHorizontal: 22 
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { colors, theme } from "../assets/styles/themeFigma";
+import { useForm, Controller } from "react-hook-form";
+import { authUser } from "../api/endpoint";
+import { useDispatch, useSelector } from "react-redux";
+import { addAuthData } from "../redux/features/authUserSlice";
+import Toast from 'react-native-toast-message';
+
+export default function SigninScreen({ navigation }) {
+
+  const [isEditable, setEditable] = useState(true)
+  const [hiddenPassword, setHiddenPassword] = useState(true)
+
+  const userAuth = useSelector((state) => state.userAuth.data)
+  const dispatch = useDispatch()
+
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      phoneNumber: '',
+      password: ''
+    }
+  });
+
+  useEffect(() => {
+    if (userAuth) {
+      navigation.navigate('Main')
+    }
+  }, [])
+
+  const onAuthenticate = (data) => {
+    setEditable(false)
+
+    const queryBody = {
+      "tel": data.phoneNumber,
+      "password": data.password
+    }
+
+    authUser(queryBody)
+      .then(
+        async response => {
+          setEditable(true)
+
+          if (response.data) {
+            dispatch(addAuthData(response.data))
+            navigation.navigate('Main')
+            Toast.show({
+              type: 'success',
+              text1: 'OTrouve',
+              text2: 'Bravo ! Vous êtes connecté avec succès.'
+            });
+          } else {
+            Toast.show({
+              type: 'error',
+              text1: 'OTrouve',
+              text2: response.message
+            });
+          }
+        }
+      )
+  }
+
+
+  return (
+    <ImageBackground style={{ flex: 1 }} source={require('../assets/images/login.png')}>
+      <StatusBar barStyle="transparent" translucent backgroundColor="transparent" />
+      <View style={[theme.containerFluidFigma, {
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingTop: 20,
+        paddingBottom: 20
+      }]}>
+        <View >
+          <Text style={[theme.textFont, { color: 'white', fontWeight: 500, fontSize: 25, }]}>Connexion</Text>
+        </View>
+
+        <View
+          style={{
+            backgroundColor: "white",
+            paddingHorizontal: 20,
+            paddingVertical: 15,
+            borderRadius: 15
           }}>
-  
-          <View style={{ alignItems: 'center'}}>
-            <Image
-              source={require('../assets/images/authenticate.png')}
-              style={{
-                resizeMode: 'cover',
-                height: 160, 
-                width: 160,
-                marginTop: 50, 
-                marginBottom: 60, 
-                borderRadius: 20
-              }}
+
+          <Text style={{ marginBottom: 5, color: 'black' }}>Numéro</Text>
+          <View style={[theme.formGroup, { borderColor: errors.phoneNumber ? colors.danger : colors.gray }]}>
+
+            <Controller
+              control={control}
+              name="phoneNumber"
+              rules={{ required: true }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  editable={isEditable}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  maxLength={10}
+                  keyboardType='name-phone-pad'
+                  inputMode="numeric"
+                  placeholderTextColor={colors.greyDark}
+                  style={[theme.inputText, { height: "100%" }]}
+                  placeholder={"Numéro de téléphone"} />
+              )}
             />
           </View>
-            
-          <Text style={[{
-            fontSize: 30, 
-            fontWeight: 'bold', 
-            marginBottom: 10,
-            }, theme.textFontBold, colors.secondary]}
-          >
-            Connexion
-          </Text>
-          
-          <View style={{ marginBottom: 60 }}>
-              <View style={[theme.formGroupView]}>
-                  <TextInput
-                      placeholder='Numéro de téléphone'
-                      placeholderTextColor={colors.greyDark}
-                      style={[theme.fieldText]}
-                  />
-  
-                  <Text
-                      style={{
-                          position: "absolute",
-                          left: 12,
-                      }}
-                  >
-                    <FontsIcons name="user" size={22} color={colors.greyDark} />
-                  </Text>
-              </View>
-              <View style={[theme.formGroupView]}>
+
+          <Text style={{ marginBottom: 5, color: 'black' }}>Mot de passe</Text>
+          <View style={[theme.formGroup, { borderColor: errors.password ? colors.danger : colors.gray }]}>
+
+            <Controller
+              name="password"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  placeholder='Mot de passe'
-                  secureTextEntry={isPasswordShown}
+                  editable={isEditable}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
                   placeholderTextColor={colors.greyDark}
-                  style={[theme.fieldText]}
-                />
-  
-                <TouchableOpacity
-                  onPress={() => setIsPasswordShown(!isPasswordShown)}
-                  style={{
-                    position: "absolute",
-                    right: 12,
-                    fontFamily: 'Quicksand-Medium'
-                  }}
-                >
-                  {
-                    isPasswordShown == true ? (
-                      <FontsIcons name="eye-slash" size={22} color={colors.greyDark} />
-                    ) : (
-                      <FontsIcons name="eye" size={22} color={colors.greyDark} />
-                    )
-                  }
-                </TouchableOpacity>
-  
-                <Text
-                  style={{
-                    position: "absolute",
-                    left: 12,
-                  }}
-                >
-                  <FontsIcons name="lock" size={22} color={colors.greyDark} />
-                </Text>
-              </View>
+                  secureTextEntry={hiddenPassword}
+                  style={[theme.inputText, { height: "100%", width: "90%" }]}
+                  placeholder='Mot de passe' />
+              )}
+            />
+            <TouchableOpacity onPress={() => setHiddenPassword(!hiddenPassword)}>
+              <FontAwesomeIcon color={colors.greyDark} size={18} icon={hiddenPassword ? faEye : faEyeSlash} />
+            </TouchableOpacity>
           </View>
-  
+
           <TouchableOpacity
-            style={[{
-              marginBottom: 20,
-              borderColor: colors.primary,
-              backgroundColor: colors.primary,
-            }, theme.btnTouch]}
-          >
-            <Text style={{ 
-              fontSize: 18, 
-              color: 'white',
-              fontFamily: 'Quicksand-Medium'
-              }}
-            >
-                Connexion
-              </Text>
-          </TouchableOpacity>
-  
-          <TouchableOpacity
-            style={[{
-              borderColor: colors.primary,
-            }, theme.btnTouch]}
-            onPress={() => {
-              navigation.navigate('Signup')
-            }}
-          >
-            <Text style={{ 
-              fontSize: 18, 
-              color: colors.primary,
-              fontFamily: 'Quicksand-Medium'
-              }}
-            >
-              Créer un compte
+            onPress={handleSubmit(onAuthenticate)}
+            style={[theme.btn, { backgroundColor: colors.blue, }]}>
+            <Text style={{
+              color: colors.white,
+              textAlign: "center",
+              fontSize: 16,
+            }}>
+              {
+                isEditable ?
+                  <Text style={[theme.textFont, {
+                    color: colors.white,
+                    textAlign: "center",
+                    fontSize: 16,
+                  }]}>Connexion</Text>
+                  : <ActivityIndicator color={colors.white} />
+              }
             </Text>
           </TouchableOpacity>
-        </ScrollView>
-      </SafeAreaView>
-    );
-}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Signup')}
+            style={[theme.btn, theme.ligthBtn]}>
+            <Text style={[theme.textFont, {
+              color: colors.blue,
+              textAlign: "center",
+              fontSize: 16,
+            }]}>Créer un compter</Text>
 
-export default SigninScreen
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ImageBackground>
+  )
+}

@@ -7,8 +7,9 @@ export const colors = {
   textPrimary: '#313131',
   textSecondary: '#8E8E93',
   yellow: '#F9CE3D',
-  gray: '#E5E5EA',
-  blue: '#07B1FF',
+  gray: '#f0f0f0',
+  /* gray: '#E5E5EA', */
+  blue: '#26A6E0',
   white: '#FFFFFF',
   warning: '#FF9A38',
   danger: '#E83e3e',
@@ -103,20 +104,32 @@ export const theme = StyleSheet.create({
 
   formGroup: {
     borderWidth: 1,
+    backgroundColor: "#F6F7F9",
     borderColor: colors.gray,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    marginBottom: 20,
+    marginBottom: 10,
     borderRadius: 5,
-    paddingHorizontal: 20,
+    /* paddingHorizontal: 20, */
+  },
+  formGroupGarment: {
+    borderWidth: 1,
+    backgroundColor: "#F6F7F9",
+    borderColor: colors.gray,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginBottom: 15,
+    borderRadius: 5,
+    /* paddingHorizontal: 20, */
   },
 
   inputText: {
-    fontSize: 14,
+    fontSize: 13,
     width: '100%',
     height: 'auto',
-    color: colors.secondary,
+    color: "#72747E",
     paddingHorizontal: 10,
     paddingVertical: Platform.OS === 'ios' ? 15 : 'auto',
     fontFamily: 'Quicksand-Medium',
@@ -134,12 +147,17 @@ export const theme = StyleSheet.create({
   },
 
   btn: {
-    width: '100%',
+   /*  width: '100%', */
     padding: 12,
-    marginTop: 20,
+    marginTop: 10,
     borderRadius: 12,
   },
-
+  btnSmall: {
+    /*  width: '100%', */
+     padding: 8,
+     marginTop: 10,
+     borderRadius: 12,
+   },
   btnTouch: {
     paddingVertical: 10,
     borderWidth: 2,
@@ -150,7 +168,7 @@ export const theme = StyleSheet.create({
 
   ligthBtn: {
     backgroundColor: 'transparent',
-    borderColor: colors.primary,
+    borderColor: colors.blue,
     borderWidth: 1,
   },
 

@@ -1,178 +1,225 @@
-import React, {useEffect, useState} from 'react'
+import React, { useState } from "react";
 import {
-    Text,
-    View,
-    TextInput,
-    Image,
-    TouchableOpacity, ScrollView,SafeAreaView
-  } from 'react-native';
-import FontsIcons from 'react-native-vector-icons/FontAwesome6'
-import { colors, screenWidth, theme } from '../assets/styles/theme';
+  Text,
+  View,
+  StatusBar,
+  StyleSheet,
+  ImageBackground,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ActivityIndicator
+} from "react-native";
+
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { colors, theme } from "../assets/styles/themeFigma";
+import { Controller, useForm } from "react-hook-form";
+import { registerUser } from "../api/endpoint";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
+
+export default function SignupScreen({ navigation }) {
+
+  const [isEditable, setEditable] = useState(true)
+  const [hiddenPassword, setHiddenPassword] = useState(true)
+
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      phoneNumber: '',
+      password: ''
+    }
+  });
+
+  const onRegisterUser = (data) => {
+    setEditable(false)
+
+    const queryBody = {
+      "name": data.name,
+      "tel": data.phoneNumber,
+      "password": data.password,
+      "password_confirmation": data.validatePassword
+    }
+
+    registerUser(queryBody)
+      .then(
+        response => {
+          setEditable(true)
+          if (response.data) {
+            navigation.navigate('Signin')
+            Toast.show({
+              type: 'success',
+              text1: 'Digital',
+              text2: 'Bravo ! Votre compte a été créé avec succès.'
+            });
+          } else {
+            console.log(response.message)
+            Toast.show({
+              type: 'error',
+              text1: 'Digital',
+              text2: response.message
+            });
+          }
+        }
+      )
+  }
 
 
-function SignupScreen({ navigation }) {
-    const [isPasswordShown, setIsPasswordShown] = useState(false);
-  
-    return (
-      <SafeAreaView style={{ flex: 1}}>
-        <View style={[{ 
-          flex: 1, 
-        }, theme.container]}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={{ alignItems: 'center'}}>
-              <Image
-                source={require('../assets/images/search.png')}
-                style={{
-                  height: (screenWidth * 40) / 100, 
-                  width: (screenWidth * 40) / 100,
-                  marginTop: 30, 
-                  marginBottom: 30, 
-                  borderRadius: 20
-                }}
+  return (
+
+    <ImageBackground style={{ flex: 1 }} source={require('../assets/images/signup.png')}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
+        <StatusBar barStyle="transparent" translucent backgroundColor="transparent" />
+        <View style={[theme.containerFluidFigma, {
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingVertical: 20
+        }]}>
+          <View
+            style={{
+            }}>
+            <Text style={[theme.title, theme.textFont, { color: 'white', fontWeight: 500 }]}>Créer un compte</Text>
+          </View>
+
+          <View
+            style={{
+              backgroundColor: "white",
+              paddingHorizontal: 20,
+              paddingVertical: 15,
+              borderRadius: 15
+            }}>
+            <Text style={{ marginBottom: 5, color: 'black' }}>Nom</Text>
+            <View style={[theme.formGroup, { borderColor: errors.name ? colors.danger : colors.gray }]}>
+
+              <Controller
+                control={control}
+                name="name"
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    editable={isEditable}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    maxLength={10}
+                    placeholderTextColor={colors.greyDark}
+                    style={[theme.inputText, { height: "100%" }]}
+                    placeholder={"Entrer nom"} />
+                )}
               />
             </View>
-              
-            <Text style={[{
-              fontSize: 25, 
-              marginBottom: 10,
-              }, theme.textFontBold, colors.secondary]}
-            >
-              Créer votre compte
-            </Text>
-            
-            <Text style={[{
-              fontSize: 16, 
-              marginBottom: 20, 
-            }, theme.textFont, colors.secondary]}>
-              Pour rejoindre notre groupe de chercheurs d'objets perdus inscrivez-vous maintenant.
-            </Text>
-            
-            <View style={{ marginBottom: 30 }}>
-                <View style={[theme.formGroupView]}>
-                    <TextInput
-                        placeholder='Numéro de téléphone'
-                        placeholderTextColor={colors.greyDark}
-                        style={[theme.fieldText]}
-                    />
-  
-                    <Text
-                        style={{
-                            position: "absolute",
-                            left: 12,
-                        }}
-                    >
-                      <FontsIcons name="user" size={22} color={colors.greyDark} />
-  
-                    </Text>
-                </View>
-  
-                <View style={[theme.formGroupView]}>
+
+            <Text style={{ marginBottom: 5, color: 'black' }}>Numéro</Text>
+            <View style={[theme.formGroup, { borderColor: errors.phoneNumber ? colors.danger : colors.gray }]}>
+
+              <Controller
+                control={control}
+                name="phoneNumber"
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                      placeholder='Mot de passe'
-                      placeholderTextColor={colors.greyDark}
-                      secureTextEntry={isPasswordShown}
-                      style={[theme.fieldText]}
-                  />
-  
-                    <TouchableOpacity
-                      onPress={() => setIsPasswordShown(!isPasswordShown)}
-                      style={{
-                        position: "absolute",
-                        right: 12
-                      }}
-                    >
-                      {
-                        isPasswordShown == true ? (
-                          <FontsIcons name="eye-slash" size={22} color={colors.greyDark} />
-                        ) : (
-                          <FontsIcons name="eye" size={22} color={colors.greyDark} />
-                        )
-                      }
-  
-                    </TouchableOpacity>
-  
-                    <Text
-                      style={{
-                        position: "absolute",
-                        left: 12,
-                      }}
-                    >
-                      <FontsIcons name="lock" size={23} color={colors.greyDark} />
-                    </Text>
-                </View>
-  
-                <View style={[theme.formGroupView]}>
-                    <TextInput
-                      placeholder='Confirmer le mot de passe'
-                      placeholderTextColor={colors.greyDark}
-                      secureTextEntry={isPasswordShown}
-                      style={[theme.fieldText]}
-                    />
-  
-                    <TouchableOpacity
-                      onPress={() => setIsPasswordShown(!isPasswordShown)}
-                      style={{
-                        position: "absolute",
-                        right: 12
-                      }}
-                    >
-                      {
-                        isPasswordShown == true ? (
-                          <FontsIcons name="eye-slash" size={22} color={colors.greyDark} />
-                        ) : (
-                          <FontsIcons name="eye" size={22} color={colors.greyDark} />
-                        )
-                      }
-                    </TouchableOpacity>
-  
-                    <Text
-                      style={{
-                        position: "absolute",
-                        left: 12,
-                      }}
-                    >
-                      <FontsIcons name="lock" size={23} color={colors.greyDark} />
-                    </Text>
-                </View>
+                    editable={isEditable}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    maxLength={10}
+                    keyboardType='name-phone-pad'
+                    inputMode="numeric"
+                    placeholderTextColor={colors.greyDark}
+                    style={[theme.inputText, { height: "100%" }]}
+                    placeholder={"Numéro de téléphone"} />
+                )}
+              />
             </View>
-  
+
+            <Text style={{ marginBottom: 5, color: 'black' }}>Mot de passe</Text>
+            <View style={[theme.formGroup, { borderColor: errors.password ? colors.danger : colors.gray }]}>
+
+              <Controller
+                name="password"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    editable={isEditable}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    placeholderTextColor={colors.greyDark}
+                    secureTextEntry={hiddenPassword}
+                    style={[theme.inputText, { height: "100%", width: "90%" }]}
+                    placeholder='Mot de passe' />
+                )}
+              />
+              <TouchableOpacity onPress={() => setHiddenPassword(!hiddenPassword)}>
+                <FontAwesomeIcon color={colors.greyDark} size={18} icon={hiddenPassword ? faEye : faEyeSlash} />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={{ marginBottom: 5, color: 'black' }}>Confirme mot de passe</Text>
+            <View style={[theme.formGroup, { borderColor: errors.validatePassword ? colors.danger : colors.gray }]}>
+
+              <Controller
+                name="validatePassword"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    editable={isEditable}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    placeholderTextColor={colors.greyDark}
+                    secureTextEntry={hiddenPassword}
+                    style={[theme.inputText, { height: "100%", width: "90%" }]}
+                    placeholder='Confirme mot de passe' />
+                )}
+              />
+              <TouchableOpacity onPress={() => setHiddenPassword(!hiddenPassword)}>
+                <FontAwesomeIcon color={colors.greyDark} size={18} icon={hiddenPassword ? faEye : faEyeSlash} />
+              </TouchableOpacity>
+            </View>
+
             <TouchableOpacity
-                style={[{
-                  marginBottom: 20,
-                  borderColor: colors.primary,
-                  backgroundColor: colors.primary,
-                }, theme.btnTouch]}
-            >
-              <Text style={[{ 
-                fontSize: 18, 
-                color: 'white',
-              }, theme.textFont]}
-              >
-                Je m'inscris
+              onPress={handleSubmit(onRegisterUser)}
+              style={[theme.btn, { backgroundColor: colors.blue, }]}>
+              <Text style={{
+                color: colors.white,
+                textAlign: "center",
+                fontSize: 16,
+              }}>
+                {
+                  isEditable ?
+                    <Text style={[theme.textFont, {
+                      color: colors.white,
+                      textAlign: "center",
+                      fontSize: 16,
+                    }]}>Créer un compte</Text>
+                    : <ActivityIndicator color={colors.white} />
+                }
               </Text>
             </TouchableOpacity>
-  
             <TouchableOpacity
-                style={[{
-                  borderColor: colors.primary,
-                }, theme.btnTouch]}
-                onPress={() => {
-                  navigation.navigate('Signin')
-                }}
-            >
-              <Text style={[{ 
-                fontSize: 18, 
-                color: colors.primary,
-                }, theme.textFont]}
-              >
-                Se connecter
-              </Text>
+              onPress={() => navigation.navigate('Signin')}
+              style={[theme.btn, theme.ligthBtn]}>
+              <Text style={[theme.textFont, {
+                color: colors.blue,
+                textAlign: "center",
+                fontSize: 16,
+              }]}>Connexion</Text>
             </TouchableOpacity>
-  
-          </ScrollView>
+          </View>
         </View>
-      </SafeAreaView>
-    );
+      </KeyboardAvoidingView>
+    </ImageBackground>
+
+  )
 }
 
-export default SignupScreen
+const styles = StyleSheet.create({
+  root: {
+    justifyContent: 'center',
+  }
+
+})
